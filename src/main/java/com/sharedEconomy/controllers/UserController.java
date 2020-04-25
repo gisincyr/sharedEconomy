@@ -44,6 +44,7 @@ public class UserController {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundException("User not found on :: " + userId));
 
+		/* test */
 		return ResponseEntity.ok().body(user);
 	}
 
