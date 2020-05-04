@@ -54,6 +54,9 @@ public class ContractController {
 		Contract contract = contractRepository.findById(contractId)
 				.orElseThrow(() -> new ContractNotFoundException("Contract not found on :: " + contractId));
 		
+		contract.setStartDate(contractDetails.getStartDate());
+		contract.setEndDate(contractDetails.getEndDate());
+		
 		final Contract updatedContract = contractRepository.save(contract);
 		return ResponseEntity.ok(updatedContract);
 	}

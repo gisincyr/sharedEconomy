@@ -32,6 +32,14 @@ public class Pricing {
 	@JoinColumn(name = "currency_id", referencedColumnName = "id")
 	private Currency currency;
 	
+	public long getId() {
+        return id;
+    }
+	
+	public void setId(long id) {
+        this.id = id;
+    }
+	
 	public float getPrice() {
 		return this.price;
 	}

@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sharedEconomy.exceptions.ContractNotFoundException;
 import com.sharedEconomy.exceptions.ContractPositionNotFoundException;
+import com.sharedEconomy.models.Contract;
 import com.sharedEconomy.models.ContractPosition;
 import com.sharedEconomy.repositories.ContractPositionRepository;
 
@@ -49,11 +51,13 @@ public class ContractPositionController {
 	}
 
 	@PutMapping("/contractpositions/{id}")
-	public ResponseEntity<ContractPosition> updateContract(@PathVariable(value = "id") Long contractPositionId)
-			throws ContractPositionNotFoundException {
+	public ResponseEntity<ContractPosition> updateContract(@PathVariable(value = "id") Long contractPositionId,
+			@Valid @RequestBody ContractPosition contractPositionDetails) throws ContractPositionNotFoundException {
 		
 		ContractPosition contractPosition = contractPositionRepository.findById(contractPositionId).orElseThrow(
 				() -> new ContractPositionNotFoundException("ContractPosition not found on :: " + contractPositionId));
+		
+		contractPosition.setRating(contractPositionDetails.getRating());
 		
 		final ContractPosition updatedContractPosition = contractPositionRepository.save(contractPosition);
 		return ResponseEntity.ok(updatedContractPosition);

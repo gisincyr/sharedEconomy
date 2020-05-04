@@ -59,11 +59,15 @@ public class UserController {
 		
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundException("User not found on :: " + userId));
-		/*
-		 * user.setEmail(userDetails.getEmail());
-		 * user.setLastName(userDetails.getLastName());
-		 * user.setFirstName(userDetails.getFirstName()); user.setUpdatedOn(new Date());
-		 */
+		
+		user.setFirstName(userDetails.getFirstName());
+		user.setLastName(userDetails.getLastName());
+		user.setEmail(userDetails.getEmail());
+		user.setPassword(userDetails.getPassword());
+		user.setStreet(userDetails.getStreet());
+		user.setHousenumber(userDetails.getHousenumber());
+		user.setCity(userDetails.getCity());
+		
 		final User updatedUser = userRepository.save(user);
 		return ResponseEntity.ok(updatedUser);
 	}

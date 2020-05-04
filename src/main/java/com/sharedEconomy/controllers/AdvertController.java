@@ -59,11 +59,11 @@ public class AdvertController {
 		Advert advert = advertRepository.findById(advertId)
 				.orElseThrow(() -> new AdvertNotFoundException("Advert not found on :: " + advertId));
 		
-		/*
-		 * user.setEmail(userDetails.getEmail());
-		 * user.setLastName(userDetails.getLastName());
-		 * user.setFirstName(userDetails.getFirstName()); user.setUpdatedOn(new Date());
-		 */
+		advert.setAdvertType(advertDetails.getAdvertType());
+		advert.setTitle(advertDetails.getTitle());
+		advert.setDescription(advertDetails.getDescription());
+		advert.setPricing(advertDetails.getPricing());
+		
 		final Advert updatedAdvert = advertRepository.save(advert);
 		return ResponseEntity.ok(updatedAdvert);
 	}
