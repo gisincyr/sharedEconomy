@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sharedEconomy.exceptions.ContractNotFoundException;
-import com.sharedEconomy.exceptions.ContractPositionNotFoundException;
-import com.sharedEconomy.models.Contract;
+import com.sharedEconomy.exceptions.EntityNotFoundException;
 import com.sharedEconomy.models.ContractPosition;
 import com.sharedEconomy.repositories.ContractPositionRepository;
 
@@ -37,10 +35,10 @@ public class ContractPositionController {
 
 	@RequestMapping(value = "/contractpositions/{id}", method = RequestMethod.GET)
 	public ResponseEntity<ContractPosition> getContractPositionById(@PathVariable(value = "id") Long contractPositionId)
-			throws ContractPositionNotFoundException {
+			throws EntityNotFoundException {
 
 		ContractPosition contractPosition = contractPositionRepository.findById(contractPositionId).orElseThrow(
-				() -> new ContractPositionNotFoundException("ContractPosition not found on :: " + contractPositionId));
+				() -> new EntityNotFoundException("ContractPosition not found on " + contractPositionId));
 
 		return ResponseEntity.ok().body(contractPosition);
 	}
@@ -52,10 +50,10 @@ public class ContractPositionController {
 
 	@PutMapping("/contractpositions/{id}")
 	public ResponseEntity<ContractPosition> updateContract(@PathVariable(value = "id") Long contractPositionId,
-			@Valid @RequestBody ContractPosition contractPositionDetails) throws ContractPositionNotFoundException {
+			@Valid @RequestBody ContractPosition contractPositionDetails) throws EntityNotFoundException {
 		
 		ContractPosition contractPosition = contractPositionRepository.findById(contractPositionId).orElseThrow(
-				() -> new ContractPositionNotFoundException("ContractPosition not found on :: " + contractPositionId));
+				() -> new EntityNotFoundException("ContractPosition not found on " + contractPositionId));
 		
 		contractPosition.setRating(contractPositionDetails.getRating());
 		
@@ -65,10 +63,10 @@ public class ContractPositionController {
 
 	@DeleteMapping("/contractpositions/{id}")
 	public Map<String, Boolean> deleteContractPosition(@PathVariable(value = "id") Long contractPositionId)
-			throws ContractPositionNotFoundException {
+			throws EntityNotFoundException {
 		
 		ContractPosition contractPosition = contractPositionRepository.findById(contractPositionId).orElseThrow(
-				() -> new ContractPositionNotFoundException("ContractPosition not found on :: " + contractPositionId));
+				() -> new EntityNotFoundException("ContractPosition not found on " + contractPositionId));
 		
 		contractPositionRepository.delete(contractPosition);
 		

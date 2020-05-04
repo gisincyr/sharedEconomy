@@ -11,27 +11,13 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-	/**
-	 * Resource not found exception response entity.
-	 *
-	 * @param ex      the ex
-	 * @param request the request
-	 * @return the response entity
-	 */
-	@ExceptionHandler(UserNotFoundException.class)
-	public ResponseEntity<?> UserNotFoundException(UserNotFoundException ex, WebRequest request) {
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<?> EntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
 		ErrorResponse errorDetails = new ErrorResponse(new Date(), HttpStatus.NOT_FOUND.toString(), ex.getMessage(),
 				request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 	}
 
-	/**
-	 * Globle excpetion handler response entity.
-	 *
-	 * @param ex      the ex
-	 * @param request the request
-	 * @return the response entity
-	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> globleExcpetionHandler(Exception ex, WebRequest request) {
 		ErrorResponse errorDetails = new ErrorResponse(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),

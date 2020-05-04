@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sharedEconomy.exceptions.ContractNotFoundException;
+import com.sharedEconomy.exceptions.EntityNotFoundException;
 import com.sharedEconomy.models.Contract;
 import com.sharedEconomy.repositories.ContractRepository;
 
@@ -34,10 +34,10 @@ public class ContractController {
 	}
 
 	@RequestMapping(value="/contracts/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Contract> getContractById(@PathVariable(value = "id") Long contractId) throws ContractNotFoundException {
+	public ResponseEntity<Contract> getContractById(@PathVariable(value = "id") Long contractId) throws EntityNotFoundException {
 		
 		Contract contract = contractRepository.findById(contractId)
-				.orElseThrow(() -> new ContractNotFoundException("Contract not found on :: " + contractId));
+				.orElseThrow(() -> new EntityNotFoundException("Contract not found on " + contractId));
 
 		return ResponseEntity.ok().body(contract);
 	}
@@ -49,10 +49,10 @@ public class ContractController {
 
 	@PutMapping("/contracts/{id}")
 	public ResponseEntity<Contract> updateContract(@PathVariable(value = "id") Long contractId,
-			@Valid @RequestBody Contract contractDetails) throws ContractNotFoundException {
+			@Valid @RequestBody Contract contractDetails) throws EntityNotFoundException {
 		
 		Contract contract = contractRepository.findById(contractId)
-				.orElseThrow(() -> new ContractNotFoundException("Contract not found on :: " + contractId));
+				.orElseThrow(() -> new EntityNotFoundException("Contract not found on " + contractId));
 		
 		contract.setStartDate(contractDetails.getStartDate());
 		contract.setEndDate(contractDetails.getEndDate());
@@ -62,10 +62,10 @@ public class ContractController {
 	}
 
 	@DeleteMapping("/contracts/{id}")
-	public Map<String, Boolean> deleteContract(@PathVariable(value = "id") Long contractId) throws ContractNotFoundException {
+	public Map<String, Boolean> deleteContract(@PathVariable(value = "id") Long contractId) throws EntityNotFoundException {
 		
 		Contract contract = contractRepository.findById(contractId)
-				.orElseThrow(() -> new ContractNotFoundException("Contract not found on :: " + contractId));
+				.orElseThrow(() -> new EntityNotFoundException("Contract not found on " + contractId));
 		
 		contractRepository.delete(contract);
 		

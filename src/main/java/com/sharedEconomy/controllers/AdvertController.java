@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sharedEconomy.repositories.AdvertRepository;
-import com.sharedEconomy.exceptions.AdvertNotFoundException;
+import com.sharedEconomy.exceptions.EntityNotFoundException;
 import com.sharedEconomy.models.Advert;
 
 @RestController
@@ -36,10 +36,10 @@ public class AdvertController {
 	}
 
 	@RequestMapping(value="/adverts/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Advert> getUsersById(@PathVariable(value = "id") Long advertId) throws AdvertNotFoundException {
+	public ResponseEntity<Advert> getAdvertById(@PathVariable(value = "id") Long advertId) throws EntityNotFoundException {
 		
 		Advert advert = advertRepository.findById(advertId)
-				.orElseThrow(() -> new AdvertNotFoundException("Advert not found on :: " + advertId));
+				.orElseThrow(() -> new EntityNotFoundException("Advert not found on " + advertId));
 
 		return ResponseEntity.ok().body(advert);
 	}
@@ -54,10 +54,10 @@ public class AdvertController {
 
 	@PutMapping("/adverts/{id}")
 	public ResponseEntity<Advert> updateAdvert(@PathVariable(value = "id") Long advertId,
-			@Valid @RequestBody Advert advertDetails) throws AdvertNotFoundException {
+			@Valid @RequestBody Advert advertDetails) throws EntityNotFoundException {
 		
 		Advert advert = advertRepository.findById(advertId)
-				.orElseThrow(() -> new AdvertNotFoundException("Advert not found on :: " + advertId));
+				.orElseThrow(() -> new EntityNotFoundException("Advert not found on " + advertId));
 		
 		advert.setAdvertType(advertDetails.getAdvertType());
 		advert.setTitle(advertDetails.getTitle());
@@ -69,10 +69,10 @@ public class AdvertController {
 	}
 
 	@DeleteMapping("/adverts/{id}")
-	public Map<String, Boolean> deleteAdvert(@PathVariable(value = "id") Long advertId) throws AdvertNotFoundException {
+	public Map<String, Boolean> deleteAdvert(@PathVariable(value = "id") Long advertId) throws EntityNotFoundException {
 		
 		Advert advert = advertRepository.findById(advertId)
-				.orElseThrow(() -> new AdvertNotFoundException("Advert not found on :: " + advertId));
+				.orElseThrow(() -> new EntityNotFoundException("Advert not found on " + advertId));
 		
 		advertRepository.delete(advert);
 		

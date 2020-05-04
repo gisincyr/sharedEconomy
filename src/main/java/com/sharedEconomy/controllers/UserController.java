@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sharedEconomy.exceptions.UserNotFoundException;
+import com.sharedEconomy.exceptions.EntityNotFoundException;
 import com.sharedEconomy.exceptions.EmailExistsException;
 import com.sharedEconomy.repositories.UserRepository;
 import com.sharedEconomy.models.User;
@@ -39,10 +39,10 @@ public class UserController {
 	}
 
 	@RequestMapping(value="/users/{id}", method=RequestMethod.GET)
-	public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId) throws UserNotFoundException {
+	public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId) throws EntityNotFoundException {
 		
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("User not found on :: " + userId));
+				.orElseThrow(() -> new EntityNotFoundException("User not found on " + userId));
 
 		/* test */
 		return ResponseEntity.ok().body(user);
@@ -55,10 +55,10 @@ public class UserController {
 
 	@PutMapping("/users/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
-			@Valid @RequestBody User userDetails) throws UserNotFoundException {
+			@Valid @RequestBody User userDetails) throws EntityNotFoundException {
 		
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("User not found on :: " + userId));
+				.orElseThrow(() -> new EntityNotFoundException("User not found on " + userId));
 		
 		user.setFirstName(userDetails.getFirstName());
 		user.setLastName(userDetails.getLastName());
@@ -73,9 +73,9 @@ public class UserController {
 	}
 
 	@DeleteMapping("/users/{id}")
-	public Map<String, Boolean> deleteUser(@PathVariable(value = "id") Long userId) throws UserNotFoundException {
+	public Map<String, Boolean> deleteUser(@PathVariable(value = "id") Long userId) throws EntityNotFoundException {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("User not found on :: " + userId));
+				.orElseThrow(() -> new EntityNotFoundException("User not found on " + userId));
 		
 		userRepository.delete(user);
 		
