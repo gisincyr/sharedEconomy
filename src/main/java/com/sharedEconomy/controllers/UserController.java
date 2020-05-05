@@ -1,6 +1,5 @@
 package com.sharedEconomy.controllers;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,13 +7,10 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +28,10 @@ public class UserController {
 
 	@Autowired
 	private UserRepository userRepository;
-
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
 	@RequestMapping(value="/users", method=RequestMethod.GET)
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
@@ -44,13 +43,20 @@ public class UserController {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found on " + userId));
 
-		/* test */
 		return ResponseEntity.ok().body(user);
 	}
 
-	@RequestMapping(value="/users", method=RequestMethod.POST)
-	public User createUser(@Valid @RequestBody User user) {
-		return userRepository.save(user);
+	@RequestMapping(value="/users", method=RequestMethod.POST) 
+	public User createUser(@Valid @RequestBody User userDetails) throws EmailExistsException {
+		
+		// Check if email already exists
+		if(userRepository.findByEmail(userDetails.getEmail()) != null) 
+			throw new EmailExistsException("Email already exists: " + userDetails.getEmail());
+		
+		// Encrypt password
+		userDetails.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+		
+		return userRepository.save(userDetails);
 	}
 
 	@PutMapping("/users/{id}")
@@ -63,7 +69,7 @@ public class UserController {
 		user.setFirstName(userDetails.getFirstName());
 		user.setLastName(userDetails.getLastName());
 		user.setEmail(userDetails.getEmail());
-		user.setPassword(userDetails.getPassword());
+		user.setPassword(passwordEncoder.encode(userDetails.getPassword())); // Encrypt password
 		user.setStreet(userDetails.getStreet());
 		user.setHousenumber(userDetails.getHousenumber());
 		user.setCity(userDetails.getCity());
@@ -83,34 +89,25 @@ public class UserController {
 		response.put("deleted", Boolean.TRUE);
 		return response;
 	}
-	
-	/*
-	public bool emailExists(String email) {
-		var allUsers = userRepository.findAll(new Sort(Sort.Direction.ASC, "email"));
-		return allUsers.
-	}
 		
-	@Override
-	public User registerNewUserAccount(User userDto) throws EmailExistsException {
-	    if (emailExist(userDto.getEmail())) {
-	        throw new EmailExistsException(
-	          "There is an account with that email adress:" + userDto.getEmail());
-	    }
-	    User newUser = new User();
-	    newUser.setFirstName(userDto.getFirstName());
-	    newUser.setLastName(userDto.getLastName());
-	     
-	    newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-	     
-	    newUser.setEmail(userDto.getEmail());
-	    return userRepository.save(newUser);
+	/**
+	 * Checks the login credentials against the db
+	 * @param email
+	 * @param password
+	 * @return
+	 * @throws EntityNotFoundException
+	 */
+	@RequestMapping(value="/users/login", method=RequestMethod.POST)
+	public boolean checkLogin(@Valid @RequestBody User userDetails) throws EntityNotFoundException {
+		User user = userRepository.findByEmail(userDetails.getEmail());
+		
+		if(user == null) {
+			throw new EntityNotFoundException("No user found with email " + userDetails.getEmail());
+		}
+		
+		if(passwordEncoder.matches(userDetails.getPassword(), user.getPassword()))
+			return true;
+		
+		return false;
 	}
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-	    return new BCryptPasswordEncoder();
-	}*/
 }

@@ -8,4 +8,10 @@ import com.sharedEconomy.models.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
+	/**
+	 * Returns the user which the given email belongs to
+	 * @param email
+	 * @return
+	 */
+	public User findByEmail(String email);
 }
