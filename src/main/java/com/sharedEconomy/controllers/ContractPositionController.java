@@ -32,6 +32,24 @@ public class ContractPositionController {
 	public List<ContractPosition> getAllContractPositions() {
 		return contractPositionRepository.findAll();
 	}
+	
+	/**
+	 * Returns all ContractPosition-Entities with a 5-Star-Rating
+	 * @return
+	 */
+	@RequestMapping(value = "/fivestarcontractpositions", method = RequestMethod.GET)
+	public List<ContractPosition> getAllFiveStarContractPositions() {
+		return contractPositionRepository.findAllFiveStarRatings();
+	}	
+	
+	/**
+	 * Returns all ContractPosition-Entities with the given rating
+	 * @return
+	 */
+	@RequestMapping(value = "/contractpositionswithrating/{rating}", method = RequestMethod.GET)
+	public List<ContractPosition> getAllContractPositionsWithRating(@PathVariable(value = "rating") int ratingValue) {
+		return contractPositionRepository.findAllWithRating(ratingValue);
+	}	
 
 	@RequestMapping(value = "/contractpositions/{id}", method = RequestMethod.GET)
 	public ResponseEntity<ContractPosition> getContractPositionById(@PathVariable(value = "id") Long contractPositionId)
