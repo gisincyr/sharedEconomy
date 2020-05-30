@@ -34,6 +34,15 @@ public class AdvertController {
 	public List<Advert> getAllAdverts() {
 		return advertRepository.findAll();
 	}
+	
+	/**
+	 * Returns the amount of adverts that make use of the two separate pricing types
+	 * @return
+	 */
+	@RequestMapping(value="/advertswithpricingtypes", method=RequestMethod.GET)
+	public List<Object> getCountAdvertsForEachPricingType() {
+		return advertRepository.GetCountAdvertsForEachPricingType();
+	}
 
 	@RequestMapping(value="/adverts/{id}", method=RequestMethod.GET)
 	public ResponseEntity<Advert> getAdvertById(@PathVariable(value = "id") Long advertId) throws EntityNotFoundException {

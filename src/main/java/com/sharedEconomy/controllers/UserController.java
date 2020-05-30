@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sharedEconomy.exceptions.EntityNotFoundException;
 import com.sharedEconomy.exceptions.EmailExistsException;
 import com.sharedEconomy.repositories.UserRepository;
+import com.sharedEconomy.models.AuthenticationBody;
 import com.sharedEconomy.models.User;
 
 @RestController
@@ -92,20 +93,19 @@ public class UserController {
 		
 	/**
 	 * Checks the login credentials against the db
-	 * @param email
-	 * @param password
+	 * @param authBody
 	 * @return
 	 * @throws EntityNotFoundException
 	 */
 	@RequestMapping(value="/users/login", method=RequestMethod.POST)
-	public boolean checkLogin(@Valid @RequestBody User userDetails) throws EntityNotFoundException {
-		User user = userRepository.findByEmail(userDetails.getEmail());
+	public boolean checkLogin(@Valid @RequestBody AuthenticationBody authBody) throws EntityNotFoundException {
+		User user = userRepository.findByEmail(authBody.getEmail());
 		
 		if(user == null) {
-			throw new EntityNotFoundException("No user found with email " + userDetails.getEmail());
+			throw new EntityNotFoundException("No user found with email " + authBody.getEmail());
 		}
 		
-		if(passwordEncoder.matches(userDetails.getPassword(), user.getPassword()))
+		if(passwordEncoder.matches(authBody.getPassword(), user.getPassword()))
 			return true;
 		
 		return false;
