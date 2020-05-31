@@ -8,6 +8,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -95,19 +97,20 @@ public class UserController {
 	 * Checks the login credentials against the db
 	 * @param authBody
 	 * @return
-	 * @throws EntityNotFoundException
+	 * @throws BadCredentialsException
 	 */
 	@RequestMapping(value="/users/login", method=RequestMethod.POST)
-	public boolean checkLogin(@Valid @RequestBody AuthenticationBody authBody) throws EntityNotFoundException {
+	public ResponseEntity<User> checkLogin(@Valid @RequestBody AuthenticationBody authBody) throws EntityNotFoundException {
 		User user = userRepository.findByEmail(authBody.getEmail());
 		
 		if(user == null) {
-			throw new EntityNotFoundException("No user found with email " + authBody.getEmail());
+			throw new BadCredentialsException("No user found with email " + authBody.getEmail());
 		}
 		
-		if(passwordEncoder.matches(authBody.getPassword(), user.getPassword()))
-			return true;
+		if(!passwordEncoder.matches(authBody.getPassword(), user.getPassword())) {
+			throw new BadCredentialsException("Password or E-Mail wrong");
+		}
 		
-		return false;
+		return ResponseEntity.ok(user);
 	}
 }
